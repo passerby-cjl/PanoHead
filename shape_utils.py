@@ -83,7 +83,7 @@ def convert_sdf_samples_to_ply(
 
     num_verts = verts.shape[0]
     num_faces = faces.shape[0]
-
+    print("verts and faces num:",num_verts, num_faces)
     verts_tuple = np.zeros((num_verts,), dtype=[("x", "f4"), ("y", "f4"), ("z", "f4")])
 
     for i in range(0, num_verts):
