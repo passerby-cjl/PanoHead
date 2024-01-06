@@ -84,10 +84,10 @@ def convert_sdf_samples_to_ply(
     num_verts = verts.shape[0]
     num_faces = faces.shape[0]
     print("verts and faces num:",num_verts, num_faces)
-    verts_tuple = np.zeros((num_verts,), dtype=[("x", "f4"), ("y", "f4"), ("z", "f4")])
+    verts_tuple = np.zeros((num_verts,), dtype=[("x", "f4"), ("y", "f4"), ("z", "f4"),('red','u1'),('green','u1'),('blue','u1')])
 
     for i in range(0, num_verts):
-        verts_tuple[i] = tuple(mesh_points[i, :]) + tuple()
+        verts_tuple[i] = tuple(mesh_points[i, :]) + tuple(numpy_colors[i][0],numpy_colors[i][1],numpy_colors[i][2])
 
     faces_building = []
     for i in range(0, num_faces):
