@@ -91,7 +91,7 @@ def convert_sdf_samples_to_ply(
 
     faces_building = []
     for i in range(0, num_faces):
-        faces_building.append(((faces[i, :].tolist(),colors[i][0],colors[i][1],colors[i][2])))
+        faces_building.append(((faces[i, :].tolist(),numpy_colors[i][0],numpy_colors[i][1],numpy_colors[i][2])))
     faces_tuple = np.array(faces_building, dtype=[("vertex_indices", "i4", (3,))
                                                   ,('red','u1'),('green','u1'),('blue','u1')])
 
