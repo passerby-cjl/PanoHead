@@ -184,7 +184,7 @@ def gen_interp_video(G, mp4: str, ws, w_frames=60*4, kind='cubic', grid_dims=(1,
                     sigmas[:, :, :pad] = 0
                     sigmas[:, :, -pad:] = 0
 
-                    output_ply = False
+                    output_ply = True
                     if output_ply:
                         from shape_utils import convert_sdf_samples_to_ply
                         convert_sdf_samples_to_ply(np.transpose(sigmas, (2, 1, 0)), colors, [0, 0, 0], 1, mp4.replace('.mp4', '.ply'), level=10)
