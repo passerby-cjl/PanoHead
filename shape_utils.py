@@ -34,12 +34,12 @@ import trimesh
 import skimage.measure
 import argparse
 import mrcfile
+from trimesh import PointCloud
 from tqdm import tqdm
         
 
 def convert_sdf_samples_to_ply(
     numpy_3d_sdf_tensor,
-    numpy_colors,
     voxel_grid_origin,
     voxel_size,
     ply_filename_out,
@@ -47,6 +47,7 @@ def convert_sdf_samples_to_ply(
     scale=None,
     level=0.0
 ):
+    poin
     """
     Convert sdf samples to .ply
     :param pytorch_3d_sdf_tensor: a torch.FloatTensor of shape (n,n,n)
@@ -80,20 +81,18 @@ def convert_sdf_samples_to_ply(
         mesh_points = mesh_points - offset
 
     # try writing to the ply file
-    numpy_colors = np.squeeze(numpy_colors)
     num_verts = verts.shape[0]
     num_faces = faces.shape[0]
     print("verts and faces num:",num_verts, num_faces)
-    verts_tuple = np.zeros((num_verts,), dtype=[("x", "f4"), ("y", "f4"), ("z", "f4"),('red','u1'),('green','u1'),('blue','u1')])
+    verts_tuple = np.zeros((num_verts,), dtype=[("x", "f4"), ("y", "f4"), ("z", "f4")])
 
     for i in range(0, num_verts):
-        verts_tuple[i] = tuple(mesh_points[i, :]) + (numpy_colors[i][0],numpy_colors[i][1],numpy_colors[i][2])
+        verts_tuple[i] = tuple(mesh_points[i, :])
 
     faces_building = []
     for i in range(0, num_faces):
-        faces_building.append(((faces[i, :].tolist(),numpy_colors[i][0],numpy_colors[i][1],numpy_colors[i][2])))
-    faces_tuple = np.array(faces_building, dtype=[("vertex_indices", "i4", (3,))
-                                                  ,('red','u1'),('green','u1'),('blue','u1')])
+        faces_building.append(((faces[i, :].tolist())))
+    faces_tuple = np.array(faces_building, dtype=[("vertex_indices", "i4", (3,))])
 
     el_verts = plyfile.PlyElement.describe(verts_tuple, "vertex")
     el_faces = plyfile.PlyElement.describe(faces_tuple, "face")
@@ -102,10 +101,15 @@ def convert_sdf_samples_to_ply(
     ply_data.write(ply_filename_out)
     print(f"wrote to {ply_filename_out}")
 
-
 def convert_mrc(input_filename, output_filename, isosurface_level=1):
     with mrcfile.open(input_filename) as mrc:
         convert_sdf_samples_to_ply(np.transpose(mrc.data, (2, 1, 0)), [0, 0, 0], 1, output_filename, level=isosurface_level)
+
+def convert_colored_sdf_samples_to_glb(numpy_3d_sdf_tensor, numpy_colors, glb_filename_out):
+    numpy_colors = np.pad(np.squeeze(numpy_colors), pad_width=((0,0),(0,1)), mode="constant", constant_values=255)
+    print(numpy_colors.shape)
+    pc = PointCloud(numpy_3d_sdf_tensor, colors=numpy_colors)
+    pc.export(glb_filename_out)
 
 if __name__ == '__main__':
     start_time = time.time()
