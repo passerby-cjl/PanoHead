@@ -107,7 +107,8 @@ def convert_mrc(input_filename, output_filename, isosurface_level=1):
 
 def convert_colored_sdf_samples_to_glb(numpy_3d_sdf_tensor, numpy_colors, glb_filename_out):
     numpy_colors = np.pad(np.squeeze(numpy_colors), pad_width=((0,0),(0,1)), mode="constant", constant_values=255)
-    print(numpy_colors.shape)
+    numpy_3d_sdf_tensor = np.squeeze(numpy_3d_sdf_tensor)
+    print(numpy_colors.shape, numpy_3d_sdf_tensor.shape)
     pc = PointCloud(numpy_3d_sdf_tensor, colors=numpy_colors)
     pc.export(glb_filename_out)
 
