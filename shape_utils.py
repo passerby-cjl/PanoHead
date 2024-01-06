@@ -80,7 +80,7 @@ def convert_sdf_samples_to_ply(
         mesh_points = mesh_points - offset
 
     # try writing to the ply file
-
+    numpy_colors = np.squeeze(numpy_colors)
     num_verts = verts.shape[0]
     num_faces = faces.shape[0]
     print("verts and faces num:",num_verts, num_faces)
