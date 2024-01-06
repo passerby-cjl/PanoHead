@@ -106,7 +106,8 @@ def convert_mrc(input_filename, output_filename, isosurface_level=1):
         convert_sdf_samples_to_ply(np.transpose(mrc.data, (2, 1, 0)), [0, 0, 0], 1, output_filename, level=isosurface_level)
 
 def convert_colored_sdf_samples_to_glb(numpy_3d_sdf_tensor, numpy_colors, glb_filename_out):
-    numpy_colors = np.pad(np.squeeze(numpy_colors), pad_width=((0,0),(0,1)), mode="constant", constant_values=255)
+    print(np.max(numpy_colors))
+    numpy_colors = np.pad(np.squeeze(numpy_colors), pad_width=((0,0),(0,1)), mode="constant", constant_values=1)
     numpy_colors = numpy_colors.reshape(numpy_3d_sdf_tensor.shape+(4,))
     numpy_points = np.argwhere(numpy_3d_sdf_tensor<=0)
     numpy_colors = numpy_colors[np.where(numpy_3d_sdf_tensor<=0)]
