@@ -186,13 +186,17 @@ def gen_interp_video(G, mp4: str, ws, w_frames=60*4, kind='cubic', grid_dims=(1,
                     sigmas[:, :, :pad] = 0
                     sigmas[:, :, -pad:] = 0
 
-                    output_ply = True
-                    if output_ply:
+                    output_format = "glb"
+                    
+                    if output_format == "ply":
                         from shape_utils import convert_sdf_samples_to_ply
-                        convert_sdf_samples_to_ply(np.transpose(sigmas, (2, 1, 0)), colors, [0, 0, 0], 1, mp4.replace('.mp4', '.ply'), level=10)
-                    else: # output mrc
+                        convert_sdf_samples_to_ply(np.transpose(sigmas, (2, 1, 0)), [0, 0, 0], 1, mp4.replace('.mp4', '.ply'), level=10)
+                    elif output_format == "mrc": # output mrc
                         with mrcfile.new_mmap(mp4.replace('.mp4', '.mrc'), overwrite=True, shape=sigmas.shape, mrc_mode=2) as mrc:
                             mrc.data[:] = sigmas
+                    elif output_format == "glb":
+                        from shape_utils import convert_colored_sdf_samples_to_glb
+                        convert_colored_sdf_samples_to_glb(np.transpose(sigmas, (2, 1, 0)), colors, mp4.replace('.mp4', '.glb'))
 
         video_out.append_data(layout_grid(torch.stack(imgs), grid_w=grid_w, grid_h=grid_h))
     video_out.close()
