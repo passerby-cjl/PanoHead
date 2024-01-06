@@ -163,8 +163,12 @@ def gen_interp_video(G, mp4: str, ws, w_frames=60*4, kind='cubic', grid_dims=(1,
                         with torch.no_grad():
                             while head < samples.shape[1]:
                                 torch.manual_seed(0)
-                                sigma = G.sample_mixed(samples[:, head:head+max_batch], transformed_ray_directions_expanded[:, :samples.shape[1]-head], w.unsqueeze(0), truncation_psi=psi, noise_mode='const')['sigma']
-                                sigmas[:, head:head+max_batch] = sigma
+                                # sigma = G.sample_mixed(samples[:, head:head+max_batch], transformed_ray_directions_expanded[:, :samples.shape[1]-head], w.unsqueeze(0), truncation_psi=psi, noise_mode='const')['sigma']
+                                # sigmas[:, head:head+max_batch] = sigma
+                                sample_result = G.sample_mixed(...)
+                                sigmas[:, head:head+max_batch] = sample_result['sigma']
+                                color_batch = G.torgb(sample_result['rgb'].transpose(1,2)[...,None], ws[0,0,0,:1])
+                                colors[:, head:head+max_batch] = np.transpose(color_batch[...,0], (2, 1, 0))
                                 head += max_batch
                                 pbar.update(max_batch)
 
@@ -183,7 +187,7 @@ def gen_interp_video(G, mp4: str, ws, w_frames=60*4, kind='cubic', grid_dims=(1,
                     output_ply = False
                     if output_ply:
                         from shape_utils import convert_sdf_samples_to_ply
-                        convert_sdf_samples_to_ply(np.transpose(sigmas, (2, 1, 0)), [0, 0, 0], 1, os.path.join(outdirs, mp4.replace('.mp4', '.ply')), level=10)
+                        convert_sdf_samples_to_ply(np.transpose(sigmas, (2, 1, 0)), colors, [0, 0, 0], 1, mp4.replace('.mp4', '.ply'), level=10)
                     else: # output mrc
                         with mrcfile.new_mmap(mp4.replace('.mp4', '.mrc'), overwrite=True, shape=sigmas.shape, mrc_mode=2) as mrc:
                             mrc.data[:] = sigmas
