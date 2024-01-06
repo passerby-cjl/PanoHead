@@ -39,6 +39,7 @@ from tqdm import tqdm
 
 def convert_sdf_samples_to_ply(
     numpy_3d_sdf_tensor,
+    numpy_colors,
     voxel_grid_origin,
     voxel_size,
     ply_filename_out,
@@ -66,6 +67,7 @@ def convert_sdf_samples_to_ply(
 
     # transform from voxel coordinates to camera coordinates
     # note x and y are flipped in the output of marching_cubes
+    print(numpy_colors.shape)
     mesh_points = np.zeros_like(verts)
     mesh_points[:, 0] = voxel_grid_origin[0] + verts[:, 0]
     mesh_points[:, 1] = voxel_grid_origin[1] + verts[:, 1]
@@ -85,12 +87,13 @@ def convert_sdf_samples_to_ply(
     verts_tuple = np.zeros((num_verts,), dtype=[("x", "f4"), ("y", "f4"), ("z", "f4")])
 
     for i in range(0, num_verts):
-        verts_tuple[i] = tuple(mesh_points[i, :])
+        verts_tuple[i] = tuple(mesh_points[i, :]) + tuple()
 
     faces_building = []
     for i in range(0, num_faces):
-        faces_building.append(((faces[i, :].tolist(),)))
-    faces_tuple = np.array(faces_building, dtype=[("vertex_indices", "i4", (3,))])
+        faces_building.append(((faces[i, :].tolist(),colors[i][0],colors[i][1],colors[i][2])))
+    faces_tuple = np.array(faces_building, dtype=[("vertex_indices", "i4", (3,))
+                                                  ,('red','u1'),('green','u1'),('blue','u1')])
 
     el_verts = plyfile.PlyElement.describe(verts_tuple, "vertex")
     el_faces = plyfile.PlyElement.describe(faces_tuple, "face")
