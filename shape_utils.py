@@ -109,8 +109,8 @@ def convert_colored_sdf_samples_to_glb(numpy_3d_sdf_tensor, numpy_colors, glb_fi
     print(np.max(numpy_colors))
     numpy_colors = np.pad(np.squeeze(numpy_colors), pad_width=((0,0),(0,1)), mode="constant", constant_values=1)
     numpy_colors = numpy_colors.reshape(numpy_3d_sdf_tensor.shape+(4,))
-    numpy_points = np.argwhere(numpy_3d_sdf_tensor<=0)
-    numpy_colors = numpy_colors[np.where(numpy_3d_sdf_tensor<=0)]
+    numpy_points = np.argwhere(np.logical_and(numpy_3d_sdf_tensor<=0, numpy_3d_sdf_tensor>=-5))
+    numpy_colors = numpy_colors[np.where(np.logical_and(numpy_3d_sdf_tensor<=0, numpy_3d_sdf_tensor>=-5))]
     
     print(numpy_colors.shape, numpy_points.shape)
     pc = PointCloud(numpy_points, colors=numpy_colors)
